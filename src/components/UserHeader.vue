@@ -1,25 +1,25 @@
 <template>
   <div class="d-flex align-items-center">
     <!-- 사용자가 설정되지 않았을 때 -->
-    <div v-if="!isLoggedIn" class="user-input-group d-flex align-items-center">
-      <input
+    <div v-if="!isLoggedIn" class="user-input-group">
+      <el-input
           v-model="usernameInput"
           type="text"
-          class="form-control form-control-sm custom-input"
+          class="custom-input"
           placeholder="사용자 이름 입력"
           @keyup.enter="handleSetUsername"
-      >
-      <button class="btn btn-sm btn-light custom-btn ms-2" @click="handleSetUsername">
+      ></el-input>
+      <el-button class="custom-btn" @click="handleSetUsername">
         확인
-      </button>
+      </el-button>
     </div>
 
     <!-- 사용자가 설정되었을 때 -->
-    <div v-else class="text-light d-flex align-items-center">
+    <div v-else class="usernamed">
       <span class="username me-3">{{ username }}</span>
-      <button class="btn btn-sm btn-outline-light custom-btn" @click="handleClearUsername">
+      <el-button class="custom-btn" @click="handleClearUsername">
         로그아웃
-      </button>
+      </el-button>
     </div>
   </div>
 </template>
@@ -61,7 +61,10 @@ export default {
 
 <style scoped>
 .user-input-group {
-  min-width: 250px;  /* 입력 그룹 최소 너비 설정 */
+  display: flex;          /* Flexbox로 설정 */
+  align-items: center;    /* 수직 정렬 */
+  gap: 10px;              /* 입력창과 버튼 사이 간격 */
+  min-width: 250px;       /* 입력 그룹 최소 너비 */
 }
 
 .custom-input {
@@ -85,4 +88,14 @@ export default {
   font-size: 0.95rem;
   font-weight: 500;
 }
+
+.usernamed {
+  justify-content: flex-start; /* 왼쪽 정렬 */
+  gap: 10px;                  /* username과 로그아웃 버튼 간격 */
+  min-width: 250px;           /* 입력 필드와 동일한 최소 너비 */
+  display: flex;          /* Flexbox로 설정 */
+  align-items: center;    /* 수직 정렬 */
+  min-width: 250px;       /* 입력 그룹 최소 너비 */
+}
+
 </style>
