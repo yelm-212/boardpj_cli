@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex align-items-center">
+  <div class="header">
     <!-- 사용자가 설정되지 않았을 때 -->
     <div v-if="!isLoggedIn" class="user-input-group">
       <el-input
@@ -24,51 +24,50 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed } from 'vue'
 import { useStore } from 'vuex'
 
-export default {
-  name: 'UserHeader',
-  setup() {
-    const store = useStore()
-    const usernameInput = ref('')
+const store = useStore()
 
-    const username = computed(() => store.getters.getUsername)
-    const isLoggedIn = computed(() => store.getters.isLoggedIn)
+// 상태 변수
+const usernameInput = ref('')
 
-    const handleSetUsername = () => {
-      if (usernameInput.value.trim()) {
-        store.dispatch('setUsername', usernameInput.value.trim())
-        usernameInput.value = ''
-      }
-    }
+// 계산된 속성
+const username = computed(() => store.getters.getUsername)
+const isLoggedIn = computed(() => store.getters.isLoggedIn)
 
-    const handleClearUsername = () => {
-      store.dispatch('clearUsername')
-    }
-
-    return {
-      usernameInput,
-      username,
-      isLoggedIn,
-      handleSetUsername,
-      handleClearUsername
-    }
+// 메소드
+const handleSetUsername = () => {
+  if (usernameInput.value.trim()) {
+    store.dispatch('setUsername', usernameInput.value.trim())
+    usernameInput.value = ''
   }
+}
+
+const handleClearUsername = () => {
+  store.dispatch('clearUsername')
 }
 </script>
 
 <style scoped>
+.header {
+  display: flex;
+  justify-content: space-between; /* 양쪽 끝으로 배치 */
+  align-items: center;            /* 수직 정렬 */
+  width: 100%;                    /* 전체 너비를 차지하도록 설정 */
+}
+
 .user-input-group {
   display: flex;          /* Flexbox로 설정 */
   align-items: center;    /* 수직 정렬 */
-  gap: 10px;              /* 입력창과 버튼 사이 간격 */
-  min-width: 250px;       /* 입력 그룹 최소 너비 */
+  gap: 10px;              /* username과 로그아웃 버튼 간격 */
+  flex-grow: 1;           /* 남은 공간을 차지 */
+  justify-content: flex-end;  /* 오른쪽 정렬 */
 }
 
 .custom-input {
-  min-width: 180px;  /* 입력창 최소 너비 */
+  width: 180px;  /* 입력창 최소 너비 */
   height: 35px;      /* 입력창 높이 */
   border-radius: 4px;
 }
@@ -90,12 +89,10 @@ export default {
 }
 
 .usernamed {
-  justify-content: flex-start; /* 왼쪽 정렬 */
-  gap: 10px;                  /* username과 로그아웃 버튼 간격 */
-  min-width: 250px;           /* 입력 필드와 동일한 최소 너비 */
   display: flex;          /* Flexbox로 설정 */
   align-items: center;    /* 수직 정렬 */
-  min-width: 250px;       /* 입력 그룹 최소 너비 */
+  gap: 10px;              /* username과 로그아웃 버튼 간격 */
+  flex-grow: 1;           /* 남은 공간을 차지 */
+  justify-content: flex-end;  /* 오른쪽 정렬 */
 }
-
 </style>
