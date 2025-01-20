@@ -9,8 +9,8 @@ export const postAPI = {
         return api.get(`/posts?page=${page}&size=${size}`)
     },
 
-    getPost(id) {
-        return api.get(`/posts/${id}`)
+    getPost(id, username) {
+        return api.get(`/posts/${id}?username=${username}`)
     },
 
     createPost(data) {
@@ -21,7 +21,15 @@ export const postAPI = {
         return api.patch(`/posts`, data)
     },
 
-    deletePost(id) {
-        return api.delete(`/posts/${id}`)
+    deletePost(id, username) {
+        return api.delete(`/posts/${id}?username=${username}`)
+    },
+
+    likePost(data) {
+        return api.post('/posts/like', data)
+    },
+
+    unlikePost(data) {
+        return api.delete('/posts/like', data)
     }
 }
