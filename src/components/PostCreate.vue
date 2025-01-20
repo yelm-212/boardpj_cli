@@ -1,28 +1,28 @@
 <template>
-  <el-row class="full-width" justify="center" align="top">
-        <div class="card-body">
-          <h2 class="card-title">게시글 작성</h2>
-          <el-form @submit.prevent="handleSubmit">
-            <el-form-item label="제목" :label-width="'60px'">
-              <el-input v-model="form.title" placeholder="제목을 입력하세요" required />
-            </el-form-item>
-            <el-form-item label="내용"
-                          :label-width="'60px'"
-                          :rows="5">
-              <el-input v-model="form.content"
-                        :rows="5"
-                        type="textarea"
-                        placeholder="내용을 입력하세요" required />
-            </el-form-item>
-            <div class="form-actions">
-              <router-link to="/" class="el-button el-button--secondary">취소</router-link>
-              <el-button type="primary"
-
-                         @click="handleSubmit">작성</el-button>
-            </div>
-          </el-form>
-        </div>
-  </el-row>
+  <el-card class="card-body">
+    <h2 class="card-title">게시글 작성</h2>
+    <el-form @submit.prevent="handleSubmit">
+      <el-form-item label="제목" :label-width="'60px'">
+        <el-input v-model="form.title" placeholder="제목을 입력하세요" required />
+      </el-form-item>
+      <el-form-item label="내용"
+                    :label-width="'60px'"
+                    :rows="5">
+        <el-input v-model="form.content"
+                  :rows="5"
+                  type="textarea"
+                  placeholder="내용을 입력하세요" required />
+      </el-form-item>
+      <el-row justify="space-between">
+        <router-link to="/">
+          <el-button>취소</el-button>
+        </router-link>
+        <el-button type="primary"
+                   @click="handleSubmit">작성
+        </el-button>
+      </el-row>
+    </el-form>
+  </el-card>
 </template>
 
 <script setup>
@@ -53,7 +53,7 @@ const handleSubmit = async () => {
       ...form.value,
       author: username.value
     })
-    router.push('/')
+    await router.push('/')
   } catch (error) {
     console.error('게시글 작성 실패:', error)
   }
