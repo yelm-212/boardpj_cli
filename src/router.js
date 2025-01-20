@@ -5,6 +5,7 @@ import PostCreate from './components/PostCreate.vue'
 import PostEdit from './components/PostEdit.vue'
 import store from './store'
 import {postAPI} from "@/api";
+import {ElMessageBox} from "element-plus";
 
 const routes = [
     {
@@ -36,7 +37,14 @@ const routes = [
 
                 // 현재 로그인한 사용자와 게시글 작성자 비교
                 if (store.getters.getUsername !== post.author) {
-                    alert('자신의 게시글만 수정할 수 있습니다.')
+                    await ElMessageBox.alert(
+                        '자신의 게시글만 수정할 수 있습니다.',
+                        '권한 없음',
+                        {
+                            type: 'error',
+                            confirmButtonText: '확인'
+                        }
+                    )
                     next(from)  // 이전 페이지로 돌아가기
                 } else {
                     next()  // 정상적으로 수정 페이지로 이동
