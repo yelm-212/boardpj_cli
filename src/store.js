@@ -1,8 +1,11 @@
 import { createStore } from 'vuex'
 
 export default createStore({
+    namespaced: true,
+
     state: {
-        username: localStorage.getItem('username') || ''
+        username: localStorage.getItem('username') || '',
+        currentPage: 1
     },
 
     getters: {
@@ -18,6 +21,9 @@ export default createStore({
         CLEAR_USERNAME(state) {
             state.username = ''
             localStorage.removeItem('username')
+        },
+        SET_CURRENT_PAGE(state, page) {
+            state.currentPage = page
         }
     },
 
@@ -27,6 +33,9 @@ export default createStore({
         },
         clearUsername({ commit }) {
             commit('CLEAR_USERNAME')
+        },
+        setCurrentPage({ commit }, page) {
+            commit('SET_CURRENT_PAGE', page)
         }
     }
 })

@@ -6,7 +6,8 @@ const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 module.exports = defineConfig({
   transpileDependencies: true,
   devServer : {
-    port: 8081
+    port: 8081,
+    proxy: 'http://localhost:8080'
   },
   lintOnSave: false,
   configureWebpack: {

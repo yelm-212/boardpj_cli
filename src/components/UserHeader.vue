@@ -1,5 +1,12 @@
 <template>
-  <div class="header">
+  <el-header class="header">
+    <router-link
+        to="/"
+    >
+      <div class="to_home">
+        <h5>게시판</h5>
+      </div>
+    </router-link>
     <!-- 사용자가 설정되지 않았을 때 -->
     <div v-if="!isLoggedIn" class="user-input-group">
       <el-input
@@ -21,7 +28,7 @@
         로그아웃
       </el-button>
     </div>
-  </div>
+  </el-header>
 </template>
 
 <script setup>
@@ -54,8 +61,24 @@ const handleClearUsername = () => {
 .header {
   display: flex;
   justify-content: space-between; /* 양쪽 끝으로 배치 */
-  align-items: center;            /* 수직 정렬 */
+  align-items: center;
+  height: 60px;
+  padding: 0 20px;
+  background-color: #000; /* 검정 배경색 */
+  color: #fff; /* 흰색 텍스트 */
   width: 100%;                    /* 전체 너비를 차지하도록 설정 */
+}
+
+.to_home {
+  display: flex;          /* Flexbox로 설정 */
+  flex-grow: 1;           /* 남은 공간을 차지 */
+  justify-content: flex-end;  /* 오른쪽 정렬 */
+  background-color: #000; /* 검정 배경색 */
+  color: #fff; /* 흰색 텍스트 */
+}
+
+.to_home a {
+  text-decoration: none; /* 밑줄 제거 */
 }
 
 .user-input-group {
