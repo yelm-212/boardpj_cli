@@ -12,13 +12,12 @@
                 <router-link :to="'/posts/' + post.id + '/edit'" class="edit-button">
                   <el-button
                       type="primary"
-                      class="rounded-r-none"
                   >수정</el-button>
                 </router-link>
                 <el-button
                     type="danger"
                     @click="handleDelete"
-                    class="rounded-l-none"
+                    class="delete-button"
                 >삭제</el-button>
               </div>
             </el-col>
@@ -36,7 +35,7 @@
 
         <el-divider />
 
-        <el-row align="middle" justify="content-between" class="post-footer">
+        <el-row align="middle" class="post-footer">
           <el-col class="post-liked">
             <el-button
                 :type="post.liked ? 'danger' : 'default'"
@@ -101,18 +100,29 @@ const sanitizedContent = computed(() => {
 
 const handleDelete = async () => {
   try {
-    await ElMessageBox.confirm(
-        '정말 삭제하시겠습니까?',
-        '삭제 확인',
-        {
-          confirmButtonText: '삭제',
-          cancelButtonText: '취소',
-          type: 'warning',
-        }
-    )
+    if (post.value.author !== username.value) {
+      await ElMessageBox.alert(
+          '작성자만 게시글을 삭제할 수 있습니다.',
+          '권한 없음',
+          {
+            type: 'error',
+            confirmButtonText: '확인'
+          }
+      )
+    } else {
+      await ElMessageBox.confirm(
+          '정말 삭제하시겠습니까?',
+          '삭제 확인',
+          {
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소',
+            type: 'warning',
+          }
+      )
 
-    await postAPI.deletePost(props.id, username)
-    router.push('/')
+      await postAPI.deletePost(props.id, username)
+      router.push('/')
+    }
   } catch (error) {
     if (error.response?.status === 400 && error.response?.data === 'Only Author can be deleted') {
       await ElMessageBox.alert(
@@ -153,7 +163,7 @@ const toggleLike = async () => {
 }
 
 const goBack = () => {
-  router.push({
+  router.replace({
     path: '/',
     query: { page: store.state.currentPage }
   })
@@ -192,6 +202,7 @@ onMounted(() => {
 
 .button-container .edit-button {
   order: 0;  /* 수정 버튼 */
+  margin-right: 10px;
 }
 
 .button-container .el-button[type="danger"] {

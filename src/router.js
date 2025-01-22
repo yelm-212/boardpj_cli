@@ -3,6 +3,8 @@ import PostList from './components/PostList.vue'
 import PostDetail from './components/PostDetail.vue'
 import PostCreate from './components/PostCreate.vue'
 import PostEdit from './components/PostEdit.vue'
+import PostEditor from "@/components/PostEditor.vue"
+
 import store from './store'
 import {postAPI} from "@/api";
 import {ElMessageBox} from "element-plus";
@@ -32,7 +34,7 @@ const routes = [
         beforeEnter: async (to, from, next) => {
             try {
                 // 게시글 정보 가져오기
-                const response = await postAPI.getPost(to.params.id)
+                const response = await postAPI.getPost(to.params.id, store.getters.getUsername)
                 const post = response.data
 
                 // 현재 로그인한 사용자와 게시글 작성자 비교
@@ -54,6 +56,11 @@ const routes = [
                 next(from)
             }
         }
+    },
+    {
+        path: '/posts/editor',
+        name: 'PostEditor',
+        component: PostEditor
     }
 ]
 

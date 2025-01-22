@@ -1,46 +1,40 @@
 <template>
   <el-card class="card-body">
-    <h2 class="card-title">게시글 작성</h2>
+    <h2>게시글 작성</h2>
     <el-form @submit.prevent="handleSubmit">
       <el-form-item label="제목" :label-width="'60px'">
-        <el-input v-model="form.title" placeholder="제목을 입력하세요" required />
+        <el-input v-model="form.title" placeholder="제목을 입력하세요."/>
       </el-form-item>
-      <el-form-item label="내용"
-                    :label-width="'60px'"
-                    :rows="5">
-        <el-input v-model="form.content"
-                  :rows="5"
-                  type="textarea"
-                  placeholder="내용을 입력하세요" required />
-      </el-form-item>
+
+      <!-- Updated PostEditor integration -->
+      <PostEditor v-model="form.content" />
+
       <el-row justify="space-between">
         <router-link to="/">
           <el-button>취소</el-button>
         </router-link>
-        <el-button type="primary"
-                   @click="handleSubmit">작성
-        </el-button>
+        <el-button type="primary" @click="handleSubmit">작성</el-button>
       </el-row>
     </el-form>
   </el-card>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
-import { postAPI } from '@/api'
-
-const store = useStore()
-const router = useRouter()
-
-const username = computed(() => store.getters.getUsername)
-const isLoggedIn = computed(() => store.getters.isLoggedIn)
+import {ref, computed} from 'vue'
+import {useStore} from 'vuex'
+import {useRouter} from 'vue-router'
+import {postAPI} from '@/api'
+import PostEditor from './PostEditor.vue'
 
 const form = ref({
   title: '',
-  content: ''
+  content: '' // Initialize empty content for new posts
 })
+
+const store = useStore()
+const router = useRouter()
+const username = computed(() => store.getters.getUsername)
+const isLoggedIn = computed(() => store.getters.isLoggedIn)
 
 const handleSubmit = async () => {
   if (!isLoggedIn.value) {
@@ -49,6 +43,7 @@ const handleSubmit = async () => {
   }
 
   try {
+    console.log(form.value)
     await postAPI.createPost({
       ...form.value,
       author: username.value
@@ -59,3 +54,14 @@ const handleSubmit = async () => {
   }
 }
 </script>
+
+<style>
+.card-body {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.card-title {
+  margin-bottom: 20px;
+}
+</style>

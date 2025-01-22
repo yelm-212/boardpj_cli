@@ -1,147 +1,97 @@
-// components/PostEditor.vue
 <template>
-  <div class="post-editor">
-    <el-form @submit.prevent="handleSubmit">
-      <el-form-item label="제목">
-        <el-input v-model="form.title" required />
-      </el-form-item>
-
-      <el-form-item label="내용">
-        <div class="editor-container">
-          <div class="editor-toolbar">
-            <el-button
-                @click="editor.chain().focus().toggleBold().run()"
-                :class="{ 'is-active': editor.isActive('bold') }"
-            >
-              굵게
-            </el-button>
-            <el-button
-                @click="editor.chain().focus().toggleItalic().run()"
-                :class="{ 'is-active': editor.isActive('italic') }"
-            >
-              기울임
-            </el-button>
-            <el-button
-                @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-                :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }"
-            >
-              제목
-            </el-button>
-            <el-button
-                @click="editor.chain().focus().toggleBulletList().run()"
-                :class="{ 'is-active': editor.isActive('bulletList') }"
-            >
-              목록
-            </el-button>
-            <el-button
-                @click="setLink"
-                :class="{ 'is-active': editor.isActive('link') }"
-            >
-              링크
-            </el-button>
-          </div>
-          <editor-content :editor="editor" class="editor-content" />
-        </div>
-      </el-form-item>
-
-      <el-form-item>
-        <el-button type="primary" native-type="submit">{{ submitButtonText }}</el-button>
-        <el-button @click="handleCancel">취소</el-button>
-      </el-form-item>
-    </el-form>
-  </div>
+  <ckeditor
+      v-if="editor"
+      v-model="internalData"
+      :editor="editor"
+      :config="config"
+  />
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount, defineProps, defineEmits } from 'vue'
-import { useEditor, EditorContent } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
-import Link from '@tiptap/extension-link'
+import {ref, computed, watch, defineProps, defineEmits} from 'vue';
+import {Ckeditor, useCKEditorCloud} from '@ckeditor/ckeditor5-vue';
 
+// Define props and emits
 const props = defineProps({
-  initialData: {
-    type: Object,
-    default: () => ({
-      title: '',
-      content: ''
-    })
-  },
-  submitButtonText: {
+  modelValue: {
     type: String,
-    default: '저장'
+    required: true
   }
-})
+});
+const emit = defineEmits(['update:modelValue']);
 
-const emit = defineEmits(['submit', 'cancel'])
+// CKEditor initialization
+const cloud = useCKEditorCloud({
+  version: '44.1.0',
+  translations: [ 'ko' ],
+});
 
-const form = ref({
-  title: props.initialData.title,
-  content: props.initialData.content
-})
-
-const editor = useEditor({
-  content: props.initialData.content,
-  extensions: [
-    StarterKit,
-    Link.configure({
-      openOnClick: false,
-      HTMLAttributes: {
-        class: 'text-blue-500 underline',
-      },
-    }),
-  ],
-  onUpdate: ({ editor }) => {
-    form.value.content = editor.getHTML()
-  },
-})
-
-const setLink = () => {
-  const url = window.prompt('URL을 입력하세요:')
-  if (url) {
-    editor.value.chain().focus().setLink({ href: url }).run()
+const editor = computed(() => {
+  if (!cloud.data.value) {
+    return null;
   }
-}
+  return cloud.data.value.CKEditor.ClassicEditor;
+});
 
-const handleSubmit = () => {
-  emit('submit', {
-    title: form.value.title,
-    content: form.value.content
-  })
-}
+const config = computed(() => {
+  if (!cloud.data.value) {
+    return null;
+  }
 
-const handleCancel = () => {
-  emit('cancel')
-}
+  const {
+    Essentials, Paragraph, Heading, Font, FontSize, FontFamily, FontColor, FontBackgroundColor,
+    Bold, Italic, Code, Underline,
+    CodeBlock, Subscript, Superscript, TodoList
+  } = cloud.data.value.CKEditor;
 
-onBeforeUnmount(() => {
-  editor.value?.destroy()
-})
+  return {
+    licenseKey: 'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NjkwMzk5OTksImp0aSI6ImYxOGU4ZmZiLWU5MDUtNDEwYi04ZTkxLWQ5ODgzOGNlYTAwNSIsImxpY2Vuc2VkSG9zdHMiOlsiMTI3LjAuMC4xIiwibG9jYWxob3N0IiwiMTkyLjE2OC4qLioiLCIxMC4qLiouKiIsIjE3Mi4qLiouKiIsIioudGVzdCIsIioubG9jYWxob3N0IiwiKi5sb2NhbCJdLCJ1c2FnZUVuZHBvaW50IjoiaHR0cHM6Ly9wcm94eS1ldmVudC5ja2VkaXRvci5jb20iLCJkaXN0cmlidXRpb25DaGFubmVsIjpbImNsb3VkIiwiZHJ1cGFsIl0sImxpY2Vuc2VUeXBlIjoiZGV2ZWxvcG1lbnQiLCJmZWF0dXJlcyI6WyJEUlVQIl0sInZjIjoiZjQzNzU4YjgifQ.DQ3scm_f7igKIHSpg3dEY_FV5eMunuxwrC5rYIzUAlDYAFRd9yFv5NAuSuOr3KP_hXiqGQmqyfsku8UdfYRtbg',
+    plugins: [
+      Essentials, Paragraph, Heading,
+      Font, FontSize, FontFamily, FontColor, FontBackgroundColor,
+      Bold, Italic, Code, Underline, CodeBlock, Subscript, Superscript,
+      TodoList],
+    toolbar: [
+        'undo', 'redo', '|',
+      'heading',
+      '|',
+      'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+      '|',
+        'bold', 'italic', 'code', 'underline', 'subscript', 'superscript', '|',
+        'codeblock', 'todoList'
+    ],
+    language: {
+      ui: 'ko'
+    }
+  };
+});
+
+// Internal data for the CKEditor
+const internalData = ref(props.modelValue);
+
+// Watch for changes in props and emit updates
+watch(
+    () => props.modelValue,
+    (newValue) => {
+      internalData.value = newValue;
+    }
+);
+
+watch(internalData, (newValue) => {
+  emit('update:modelValue', newValue);
+});
 </script>
 
-<style scoped>
-.editor-container {
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
+
+<style>
+.ck.ck-editor {
+  width: 100%;
+  margin: 5% auto;
 }
 
-.editor-toolbar {
-  padding: 0.5rem;
-  border-bottom: 1px solid #dcdfe6;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.editor-content {
-  padding: 1rem;
-  min-height: 300px;
-}
-
-.editor-content :deep(p) {
-  margin: 0.5em 0;
-}
-
-.is-active {
-  background-color: #ecf5ff;
-  color: #409eff;
+.ck-editor__editable {
+  min-height: 200px !important;
+  max-height: 400px !important;
 }
 </style>
+
