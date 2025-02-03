@@ -1,4 +1,4 @@
-# Vue@3 + Spring boot Board Project
+# Vue@3 + Spring boot Board Project
 
 Currently [spring boot repo.](https://github.com/yelm-212/boardpj_server) is private, will change visibility.
 
